@@ -30,4 +30,10 @@ interface ApiService {
     @POST("conversations/{receiverId}/messages")
     fun postConversation(@Path("receiverId") conversationId: Int): Call<ConversationResponse>
 
+    @GET("/start-matching")
+    fun startMatching(): Call<StartMatchingResponse>
+
+    @GET("user-profile")
+    fun getUserProfile(): Call<UserProfileResponse>
+
 }
