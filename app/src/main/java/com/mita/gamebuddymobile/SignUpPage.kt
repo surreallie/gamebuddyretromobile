@@ -10,7 +10,6 @@ import android.view.Window
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,14 +22,16 @@ import retrofit2.Response
 class SignUpPage : AppCompatActivity() {
     private lateinit var username: EditText
     private lateinit var email: EditText
-    private lateinit var age: EditText
     private lateinit var password: EditText
     private lateinit var confirmPassword: EditText
+    private lateinit var age: EditText
+    private lateinit var maleCheckbox: CheckBox
+    private lateinit var femaleCheckbox: CheckBox
+    private lateinit var othersCheckbox: CheckBox
     private lateinit var signupbutton: Button
-
     private lateinit var checkbox: CheckBox
+    private lateinit var gender:String
 
-    private var gender: Int = -1 // Default value for gender
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +44,9 @@ class SignUpPage : AppCompatActivity() {
         confirmPassword = findViewById(R.id.confirmpassword)
         signupbutton = findViewById(R.id.signupbutton)
         checkbox = findViewById(R.id.checkBox)
+        maleCheckbox = findViewById(R.id.male)
+        femaleCheckbox = findViewById(R.id.female)
+        othersCheckbox = findViewById(R.id.others)
 
         signupbutton.isEnabled = false
 
@@ -50,6 +54,28 @@ class SignUpPage : AppCompatActivity() {
             signupbutton.isEnabled = isChecked
             if (isChecked) {
                 showCustomDialogBox()
+            }
+        }
+
+        maleCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                femaleCheckbox.isChecked = false
+                othersCheckbox.isChecked = false
+                gender = "Male"
+            }
+        }
+        femaleCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                maleCheckbox.isChecked = false
+                othersCheckbox.isChecked = false
+                gender = "Female"
+            }
+        }
+        othersCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                maleCheckbox.isChecked = false
+                femaleCheckbox.isChecked = false
+                gender = "Other"
             }
         }
 
@@ -63,42 +89,17 @@ class SignUpPage : AppCompatActivity() {
             val name = username.text.toString().trim()
             val email = email.text.toString().trim()
             val password = password.text.toString().trim()
-            val ageText = age.text.toString().trim()
+            val age = age.text.toString().trim()
             val confirmPassword = confirmPassword.text.toString().trim()
 
             if (password == confirmPassword) {
-                // Check if age is a valid number
-                if (ageText.isNotEmpty() && ageText.matches("\\d+".toRegex())) {
-                    val age = ageText.toInt()
-                    // Passwords match, age is valid, and gender is selected, proceed with registration
-                    if (gender != -1) {
-                        registerUser(name, email, password, age, gender)
-                    } else {
-                        Toast.makeText(this, "Please select a gender", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this, "Please enter a valid age", Toast.LENGTH_SHORT).show()
-                }
+                // Passwords match, proceed with registration
+                registerUser(name, email, password,age.toInt())
             } else {
                 Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
             }
         }
 
-        val maleRadioButton: RadioButton = findViewById(R.id.male)
-        val femaleRadioButton: RadioButton = findViewById(R.id.female)
-        val othersRadioButton: RadioButton = findViewById(R.id.others)
-
-        maleRadioButton.setOnClickListener {
-            gender = GENDER_MALE // Set gender to male
-        }
-
-        femaleRadioButton.setOnClickListener {
-            gender = GENDER_FEMALE // Set gender to female
-        }
-
-        othersRadioButton.setOnClickListener {
-            gender = GENDER_OTHERS // Set gender to others
-        }
     }
 
     private fun showCustomDialogBox() {
@@ -125,7 +126,7 @@ class SignUpPage : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun registerUser(name: String, email: String, password: String, age: Int, gender: Int) {
+    private fun registerUser(name: String, email: String, password: String, age:Int) {
         val apiService = RetrofitClient.apiService
 
         val user = User(id = 0, name = name, email = email, password = password, age = age, gender = gender)
@@ -139,8 +140,7 @@ class SignUpPage : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 } else {
-                    Log.e("Registration", "Registration failed with response code: ${response.code()}")
-                    Toast.makeText(this@SignUpPage, "Registration failed: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SignUpPage, "Registration failed", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -149,11 +149,5 @@ class SignUpPage : AppCompatActivity() {
                 Toast.makeText(this@SignUpPage, "Error.", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-
-    companion object {
-        private const val GENDER_MALE = 0
-        private const val GENDER_FEMALE = 1
-        private const val GENDER_OTHERS = 2
     }
 }

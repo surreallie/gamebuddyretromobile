@@ -16,7 +16,6 @@ class UserAdapter(private val userList: ArrayList<UserDataClass>) :
         val name: TextView = itemView.findViewById(R.id.Name)
         val gender: TextView = itemView.findViewById(R.id.gender)
         val age: TextView = itemView.findViewById(R.id.age)
-        val interest: TextView = itemView.findViewById(R.id.interest)
         val message: TextView = itemView.findViewById(R.id.message)
     }
 
@@ -35,7 +34,6 @@ class UserAdapter(private val userList: ArrayList<UserDataClass>) :
         holder.name.text = user.name
         holder.gender.text = user.gender
         holder.age.text = user.age.toString()
-        holder.interest.text = user.interests
 
         holder.message.setOnClickListener{
             val context = holder.itemView.context

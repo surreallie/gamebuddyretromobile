@@ -5,5 +5,4 @@ data class UserDataClass(
     val name: String,
     val gender: String,
     val age: Int,
-    val interests: String
 )
