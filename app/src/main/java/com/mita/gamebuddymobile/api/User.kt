@@ -15,11 +15,11 @@ data class User(
     @SerializedName("password")
     val password: String,
 
-    @SerializedName("age")
-    val age: Int,// New field for age
-
     @SerializedName("gender")
-    val gender: Int
+    val gender: String,
+
+    @SerializedName("age")
+    val age: Int
 )
 
 

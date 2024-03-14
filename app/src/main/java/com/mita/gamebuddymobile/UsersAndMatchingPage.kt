@@ -2,25 +2,33 @@ package com.mita.gamebuddymobile
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.mita.gamebuddymobile.api.ApiService
+import com.mita.gamebuddymobile.api.RetrofitClient
 import com.mita.gamebuddymobile.api.UserDataClass
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class UsersAndMatchingPage : AppCompatActivity() {
 
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var randomUserRecyclerView: RecyclerView
     private lateinit var randomUserDataList: ArrayList<RandomUserDataClass>
-    private lateinit var userAdapter: RandomUserAdapterClass
     private lateinit var recyclerView : RecyclerView
     private lateinit var userList : ArrayList<UserDataClass>
-    private lateinit var UserAdapter : UserAdapter
+    private lateinit var userAdapter : UserAdapter
+    private lateinit var apiService: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_users_and_matching_page)
+
+        apiService = RetrofitClient.apiService
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavigationView.setOnItemSelectedListener { menuItem ->
@@ -51,30 +59,41 @@ class UsersAndMatchingPage : AppCompatActivity() {
 
         userList = ArrayList()
 
-        userList.add(UserDataClass(R.drawable.baseline_people_24, "Lan2x", "Male", 18, "League of Legends, Valorant"))
+        fetchUserData()
 
+        userAdapter = UserAdapter(userList)
+        recyclerView.adapter = userAdapter
 
-        UserAdapter = UserAdapter(userList)
-        recyclerView.adapter = UserAdapter
+    }
+    private fun fetchUserData() {
+        apiService.getUser().enqueue(object : Callback<List<UserDataClass>> {
+            override fun onResponse(
+                call: Call<List<UserDataClass>>,
+                response: Response<List<UserDataClass>>
+            ) {
+                if (response.isSuccessful) {
+                    val users = response.body()
+                    users?.let {
+                        userList.addAll(it)
+                        userAdapter.notifyDataSetChanged()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@UsersAndMatchingPage,
+                        "Failed to fetch user data from server",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
 
-
-
-        randomUserRecyclerView = findViewById(R.id.RandomUserRecycleView)
-        randomUserRecyclerView.setHasFixedSize(true)
-        randomUserRecyclerView.layoutManager = LinearLayoutManager(this)
-
-        randomUserDataList = ArrayList()
-
-        randomUserDataList.add(RandomUserDataClass(R.drawable.baseline_people_24, "Lan2x", "Male", 18))
-        randomUserDataList.add(RandomUserDataClass(R.drawable.baseline_people_24, "Rhalf", "Male", 18))
-        randomUserDataList.add(RandomUserDataClass(R.drawable.baseline_people_24, "R2x", "Male", 18))
-        randomUserDataList.add(RandomUserDataClass(R.drawable.baseline_people_24, "Ken", "Male", 18))
-        randomUserDataList.add(RandomUserDataClass(R.drawable.baseline_people_24, "Tristan", "Male", 18))
-        randomUserDataList.add(RandomUserDataClass(R.drawable.baseline_people_24, "Cy", "Male", 18))
-        randomUserDataList.add(RandomUserDataClass(R.drawable.baseline_people_24, "Notnot", "Male", 18))
-
-
-        userAdapter = RandomUserAdapterClass(randomUserDataList)
-        randomUserRecyclerView.adapter = userAdapter
+            override fun onFailure(call: Call<List<UserDataClass>>, t: Throwable) {
+                Toast.makeText(
+                    this@UsersAndMatchingPage,
+                    "Error occurred while fetching user data",
+                    Toast.LENGTH_SHORT
+                ).show()
+                t.printStackTrace()
+            }
+        })
     }
 }

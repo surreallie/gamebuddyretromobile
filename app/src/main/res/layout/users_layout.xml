@@ -62,45 +62,19 @@
             app:layout_constraintTop_toTopOf="@+id/gender" />
 
 
-        <TextView
-            android:id="@+id/interestTextOnly"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Interests :"
-            android:textColor="@color/black"
-            android:textSize="15sp"
-            app:layout_constraintStart_toStartOf="@+id/Name"
-            app:layout_constraintTop_toBottomOf="@+id/Name" />
-
-
-        <TextView
-            android:id="@+id/interest"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="League of Legends, Valorant, Call of Duty, Genshin Impact, Mobile Legends"
-            android:textColor="@color/black"
-            android:textSize="15sp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/interestTextOnly"
-            app:layout_constraintTop_toBottomOf="@+id/interestTextOnly" />
 
         <TextView
             android:id="@+id/message"
             android:layout_width="80dp"
             android:layout_height="23dp"
-            android:layout_marginStart="5dp"
             android:layout_marginBottom="10dp"
-            android:text="Message"
-            android:textColor="@color/white"
-            android:textAlignment="center"
             android:background="@drawable/signupbuttonbackgroundcolor"
+            android:text="Message"
+            android:textAlignment="center"
+            android:textColor="@color/white"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/interest" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
